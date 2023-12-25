@@ -1,4 +1,4 @@
-import { registerInput } from "@/db/inputs/auth";
+import { registerInput } from "@/server/inputs/auth";
 
 export type CreateUserInput = {
   email: string;

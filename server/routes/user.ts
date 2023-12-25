@@ -1,4 +1,4 @@
-import { getUserById, getUsers } from "@/db/controllers/user";
+import { getUserById, getUsers } from "@/server/controllers/user";
 
 const userRoutes = {
   getUserById,
