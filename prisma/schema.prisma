@@ -15,7 +15,7 @@ model User {
   lastName  String?
   avatar  String?
   gender String?
-  password String?
+  password String
   posts Todo[]
   createdAt        DateTime           @default(now())
   updatedAt        DateTime?           @updatedAt

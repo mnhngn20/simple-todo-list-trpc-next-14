@@ -1,7 +1,7 @@
-import { getUserById, getUsers } from "@/server/controllers/user";
+import { getMe, getUsers } from "@/server/controllers/user";
 
 const userRoutes = {
-  getUserById,
+  getMe,
   getUsers,
 };
 

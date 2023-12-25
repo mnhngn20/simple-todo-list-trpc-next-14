@@ -1,20 +1,20 @@
-import { procedure } from "@/server/trpc";
+import { authenticateMiddleware, procedure } from "@/server/trpc";
 import userServices from "../services/user";
-import { getUserByIdInput } from "../inputs/user";
+import { User } from "@prisma/client";
 
-export const getUserById = procedure
-  .input(getUserByIdInput)
+export const getMe = procedure
+  .use(authenticateMiddleware)
   .query(async (opts) => {
-    const { input } = opts;
-    const { id } = input;
+    const { input, ctx } = opts;
+    const contextUser = ctx.user;
 
-    const user = userServices.getOneById(id);
-
-    return user;
+    return contextUser as User;
   });
 
-export const getUsers = procedure.query(async (opts) => {
-  const users = userServices.getAll();
+export const getUsers = procedure
+  .use(authenticateMiddleware)
+  .query(async (opts) => {
+    const users = userServices.getAll();
 
-  return users;
-});
+    return users;
+  });
