@@ -5,7 +5,7 @@ import { trpc } from "../_trpc/client";
 type TextProps = {};
 
 export default function Text({}: TextProps) {
-  const { data } = trpc.getTodos.useQuery();
+  const { data } = trpc.getUsers.useQuery();
 
   console.log(data);
 

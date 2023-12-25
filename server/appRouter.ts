@@ -1,14 +1,8 @@
-import { db } from "@/db";
-import { procedure, router } from "./trpc";
+import { router } from "./trpc";
+import userRoutes from "./routes/user";
 
 export const appRouter = router({
-  getTodos: procedure.query(async (opts) => {
-    const users = await db.user.findFirst();
-
-    return {
-      users,
-    };
-  }),
+  ...userRoutes,
 });
 
 export type AppRouter = typeof appRouter;
