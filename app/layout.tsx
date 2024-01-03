@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import TRPCProvider from "./_trpc/TRPCProvider";
 import { twMerge } from "tailwind-merge";
-
-const inter = Inter({ subsets: ["latin"] });
+import { GeistSans } from "geist/font/sans";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,10 +13,11 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
-      <body className={twMerge(inter.className, "h-screen w-screen")}>
+      <body className={twMerge(GeistSans.className, "h-screen w-screen")}>
         <TRPCProvider>
           <div className="w-full h-full">{children}</div>
         </TRPCProvider>
+        <Toaster />
       </body>
     </html>
   );

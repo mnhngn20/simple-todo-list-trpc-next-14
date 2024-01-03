@@ -5,22 +5,26 @@ import { generateToken } from "./token";
 
 export const authServices = {
   async login({ email, password }: LoginInput) {
-    const existingUser = await db.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    try {
+      const existingUser = await db.user.findUnique({
+        where: {
+          email,
+        },
+      });
 
-    if (!existingUser) {
-      throw new Error("Email or password incorrect!");
+      if (!existingUser) {
+        throw new Error("Email or password incorrect!");
+      }
+
+      const isVerified = await verifyPassword(existingUser.password, password);
+
+      if (!isVerified) {
+        throw new Error("Email or password incorrect!");
+      }
+
+      return generateToken(existingUser);
+    } catch (err) {
+      console.log("ERROR", err);
     }
-
-    const isVerified = await verifyPassword(existingUser.password, password);
-
-    if (!isVerified) {
-      throw new Error("Email or password incorrect!");
-    }
-
-    return generateToken(existingUser);
   },
 };

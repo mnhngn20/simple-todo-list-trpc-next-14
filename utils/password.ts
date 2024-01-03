@@ -8,5 +8,5 @@ export async function verifyPassword(
   password: string,
   passwordToVerify: string
 ) {
-  return await verify(passwordToVerify, password);
+  return await verify(password, passwordToVerify);
 }
