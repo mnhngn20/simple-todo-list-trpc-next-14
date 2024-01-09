@@ -6,9 +6,9 @@ import { PropsWithChildren } from "react";
 export default async function Layout({ children }: PropsWithChildren) {
   const session = await getServerSession();
 
-  if (session?.user?.email) {
+  if (!session?.user?.email) {
     redirect("/");
   }
 
-  return <MainLayout childCentered>{children}</MainLayout>;
+  return <MainLayout>{children}</MainLayout>;
 }

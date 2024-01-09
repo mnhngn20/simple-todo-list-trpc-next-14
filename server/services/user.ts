@@ -1,5 +1,4 @@
 import { db, exclude } from "@/utils/db";
-import { CreateUserInput } from "@/types/user";
 import { hash } from "argon2";
 import { z } from "zod";
 import { registerInput } from "../inputs/auth";

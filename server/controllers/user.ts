@@ -5,10 +5,11 @@ import { User } from "@prisma/client";
 export const getMe = procedure
   .use(authenticateMiddleware)
   .query(async (opts) => {
-    const { input, ctx } = opts;
+    const { ctx } = opts;
     const contextUser = ctx.user;
+    const user = await userServices.getOneByEmail(contextUser.email ?? "");
 
-    return contextUser as User;
+    return user;
   });
 
 export const getUsers = procedure

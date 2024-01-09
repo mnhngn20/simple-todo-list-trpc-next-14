@@ -1,6 +1,8 @@
+import { db } from "@/utils/db";
 import { TRPCError, initTRPC } from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
 import { verify } from "jsonwebtoken";
+import { getServerSession } from "next-auth";
 
 export async function createContext({
   req,
@@ -23,14 +25,16 @@ export async function createContext({
 
 const t = initTRPC.context<typeof createContext>().create();
 
-export const authenticateMiddleware = t.middleware((opts) => {
-  const { ctx } = opts;
-  if (!ctx.user) {
+export const authenticateMiddleware = t.middleware(async (opts) => {
+  const session = await getServerSession();
+
+  if (!session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
   return opts.next({
     ctx: {
-      user: ctx.user,
+      user: session?.user,
     },
   });
 });

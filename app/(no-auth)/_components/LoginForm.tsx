@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
-import { trpc } from "@/app/_trpc/client";
 import BaseForm from "@/components/ui/BaseForm";
 import FormItem from "@/components/ui/FormItem";
 import Divider from "@/components/ui/Divider";
@@ -13,18 +12,17 @@ import { loginSchema } from "../_schemas/loginSchema";
 import { FacebookIcon, GithubIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { setAccessToken } from "@/utils/token";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
+import useNotification from "@/hooks/useNotification";
+import { useRouter } from "next/navigation";
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
-  const login = trpc.login.useMutation({
-    onSuccess(data) {
-      if (data?.accessToken) {
-        setAccessToken(data?.accessToken);
-      }
-    },
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { showError } = useNotification();
+  const { push } = useRouter();
 
   const {
     register,
@@ -34,8 +32,20 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginForm) => {
-    login.mutate(data);
+  const onSubmit = async (data: LoginForm) => {
+    setIsLoading(true);
+
+    const response = await signIn("credentials", {
+      redirect: false,
+      ...data,
+    });
+
+    if (response?.error) {
+      showError(response?.error);
+    } else {
+      push("/");
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -57,7 +67,7 @@ export default function LoginForm() {
       <span className="text-sm -mt-4 text-right text-gray-500 hover:text-gray-400 cursor-pointer">
         Forgot your password?
       </span>
-      <Button type="submit" loading={login.isLoading}>
+      <Button type="submit" loading={isLoading}>
         Login
       </Button>
       <Divider content="OR" />
@@ -69,7 +79,12 @@ export default function LoginForm() {
           <GithubIcon />
         </Button>
         <Button variant="outline">
-          <Image src="/google-icon.png" alt="Google" width={24} height={24} />
+          <Image
+            src="/images/google-icon.png"
+            alt="Google"
+            width={24}
+            height={24}
+          />
         </Button>
       </span>
       <span className="text-sm text-gray-500">
