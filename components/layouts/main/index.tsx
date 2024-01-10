@@ -22,7 +22,7 @@ export default function MainLayout({
           childCentered
             ? "flex items-center justify-center"
             : "h-[calc(100vh-80px)] mt-20",
-          showFooter && !childCentered && "max-h-[calc(100vh-80px-132px)]"
+          showFooter && !childCentered && "max-h-[calc(100vh-80px-100px)]"
         )}
       >
         {children}

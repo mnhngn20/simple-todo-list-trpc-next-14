@@ -22,8 +22,8 @@ const MENU_ITEMS = [
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <div className="grid grid-cols-12 h-full">
-      <SideBarMenu items={MENU_ITEMS} className="col-span-3" />
-      <div className="p-4">{children}</div>
+      <SideBarMenu items={MENU_ITEMS} className="col-span-2" />
+      <div className="p-4 col-span-10">{children}</div>
     </div>
   );
 }

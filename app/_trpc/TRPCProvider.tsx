@@ -5,7 +5,18 @@ import { trpc } from "./client";
 import { httpBatchLink } from "@trpc/client";
 
 export default function TRPCProvider({ children }: PropsWithChildren) {
-  const [queryClient] = useState(() => new QueryClient({}));
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            staleTime: 60 * 1000,
+          },
+        },
+      })
+  );
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [

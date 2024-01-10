@@ -4,14 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import UserProfile from "./UserProfile";
-import { trpc } from "@/app/_trpc/client";
+import { useMe } from "@/hooks/useMe";
 
 export default function HeaderExtra() {
   const { status } = useSession();
 
-  const { data } = trpc.getMe.useQuery(undefined, {
-    enabled: status === "authenticated",
-  });
+  const { data, isFetching } = useMe();
 
   if (status === "loading") {
     return null;
@@ -20,7 +18,7 @@ export default function HeaderExtra() {
   return (
     <div>
       {status === "authenticated" ? (
-        <UserProfile user={data} />
+        <UserProfile loading={isFetching} user={data} />
       ) : (
         <div className="flex gap-4">
           <Link href="/login">

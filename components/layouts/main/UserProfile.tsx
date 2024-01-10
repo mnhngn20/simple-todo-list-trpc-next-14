@@ -3,28 +3,32 @@ import { User } from "@/types/user";
 import React from "react";
 import UserMenu from "./UserMenu";
 import { ChevronDownIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 type UserProfileProps = {
   user?: User;
+  loading?: boolean;
 };
 
-export default function UserProfile({ user }: UserProfileProps) {
-  const userDefaultAvatarName = () => {
-    return [
-      user?.firstName?.[0].toLocaleUpperCase() ?? "N",
-      user?.lastName?.[0].toLocaleUpperCase() ?? "/A",
-    ];
-  };
-
+export default function UserProfile({ user, loading }: UserProfileProps) {
   return (
     <UserMenu>
       <div className="flex gap-2 items-center">
-        <Avatar>
-          <AvatarImage src={user?.avatar ?? ""} />
-          <AvatarFallback>{userDefaultAvatarName()}</AvatarFallback>
-        </Avatar>
+        {loading ? (
+          <Skeleton className="h-10 w-10 rounded-full" />
+        ) : (
+          <UserAvatar />
+        )}
         <div className="text-sm">
-          {[user?.firstName ?? "", user?.lastName].join(" ")}
+          {loading ? (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-[80px]" />
+              <Skeleton className="h-4 w-[60px]" />
+            </div>
+          ) : (
+            [user?.firstName ?? "", user?.lastName].join(" ")
+          )}
         </div>
         <ChevronDownIcon />
       </div>
