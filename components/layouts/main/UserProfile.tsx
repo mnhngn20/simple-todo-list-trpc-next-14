@@ -3,7 +3,7 @@ import { User } from "@/types/user";
 import React from "react";
 import UserMenu from "./UserMenu";
 import { ChevronDownIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/Skeleton";
 import UserAvatar from "@/components/ui/UserAvatar";
 
 type UserProfileProps = {

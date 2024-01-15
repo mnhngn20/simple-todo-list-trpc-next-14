@@ -9,7 +9,7 @@ import { useMe } from "@/hooks/useMe";
 export default function HeaderExtra() {
   const { status } = useSession();
 
-  const { data, isFetching } = useMe();
+  const [{ data, isFetching }] = useMe();
 
   if (status === "loading") {
     return null;

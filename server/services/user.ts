@@ -2,6 +2,9 @@ import { db, exclude } from "@/utils/db";
 import { hash } from "argon2";
 import { z } from "zod";
 import { registerInput } from "../inputs/auth";
+import { changePasswordInput, updateMeInput } from "../inputs/user";
+import { User as DbUser } from "@prisma/client";
+import { User } from "@/types/user";
 
 const userServices = {
   async getAll() {
@@ -24,7 +27,10 @@ const userServices = {
       throw error;
     }
   },
-  async getOneByEmail(email: string) {
+  async getOneByEmail<NotExcludePassword extends boolean>(
+    email: string,
+    notExcludePassword?: NotExcludePassword
+  ): Promise<NotExcludePassword extends true ? DbUser : User> {
     try {
       const user = await db.user.findUnique({
         where: {
@@ -36,7 +42,9 @@ const userServices = {
         throw new Error("User not found!");
       }
 
-      return exclude(user, ["password"]);
+      return (
+        notExcludePassword ? user : exclude(user, ["password"])
+      ) as NotExcludePassword extends true ? DbUser : User;
     } catch (error) {
       throw error;
     }
@@ -69,6 +77,26 @@ const userServices = {
     } catch (error) {
       throw error;
     }
+  },
+  async update(email: string, input: z.infer<typeof updateMeInput>) {
+    return await db.user.update({
+      where: {
+        email,
+      },
+      data: input,
+    });
+  },
+  async updatePassword(email: string, newPassword: string) {
+    const hashedPassword = await hash(newPassword);
+
+    return await db.user.update({
+      where: {
+        email,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
   },
 };
 

@@ -1,14 +1,6 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileSetting from "./_components/ProfileSetting";
+import PasswordSetting from "./_components/PasswordSetting";
 
 export default function Page() {
   return (
@@ -21,18 +13,7 @@ export default function Page() {
         <ProfileSetting />
       </TabsContent>
       <TabsContent value="password">
-        <Card>
-          <CardHeader>
-            <CardTitle>Password</CardTitle>
-            <CardDescription>
-              Change your password here. After saving, {`you'll`} be logged out.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">a</CardContent>
-          <CardFooter>
-            <Button>Save password</Button>
-          </CardFooter>
-        </Card>
+        <PasswordSetting />
       </TabsContent>
     </Tabs>
   );

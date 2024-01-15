@@ -16,26 +16,51 @@ import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
 import {
   ProfileSettingForm,
-  profileSettingSchema,
+  profileSettingFormSchema,
 } from "../_schemas/profile-setting";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Avatar } from "@/components/ui/avatar";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { useMe } from "@/hooks/useMe";
+import { trpc } from "@/app/_trpc/client";
+import useNotification from "@/hooks/useNotification";
+import FormSkeleton from "@/components/ui/Skeleton/FormSkeleton";
 
 type ProfileSettingProps = {};
 
 export default function ProfileSetting({}: ProfileSettingProps) {
-  const { data, isFetching } = useMe();
+  const [{ data, isLoading }, { updateMe, revertData }] = useMe();
+  const { showSuccess, showError } = useNotification();
+
+  const updateMeMutation = trpc.updateMe.useMutation({
+    onMutate: async (user) => await updateMe(user),
+    onError(error, __, context) {
+      showError(error.message);
+      context?.previousData && revertData(context?.previousData);
+    },
+    onSuccess() {
+      showSuccess("Updated profile successfully!");
+    },
+  });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
+    reset,
+    getValues,
   } = useForm<ProfileSettingForm>({
-    resolver: zodResolver(profileSettingSchema),
+    resolver: zodResolver(profileSettingFormSchema),
+    values: {
+      ...(data as ProfileSettingForm),
+    },
   });
+
+  const onSubmit = (data: ProfileSettingForm) => {
+    updateMeMutation.mutate({
+      ...data,
+    });
+  };
 
   return (
     <Card>
@@ -46,36 +71,64 @@ export default function ProfileSetting({}: ProfileSettingProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
-        <BaseForm>
-          <UserAvatar user={data} className="w-32 h-32 mx-auto" />
-          <FormItem label="Email">
-            <Input placeholder="Enter first name" />
-          </FormItem>
-          <div className="grid grid-cols-2 gap-4">
-            <FormItem label="First Name">
-              <Input placeholder="Enter first name" />
+        <FormSkeleton loading={isLoading}>
+          <BaseForm onSubmit={handleSubmit(onSubmit)}>
+            <UserAvatar user={data} className="w-32 h-32 mx-auto" />
+            <FormItem label="Email" required error={errors.email?.message}>
+              <Input placeholder="Enter first name" {...register("email")} />
             </FormItem>
-            <FormItem label="Last Name">
-              <Input placeholder="Enter last name" />
-            </FormItem>
-          </div>
-          <Controller
-            name="gender"
-            control={control}
-            render={({ field }) => (
-              <FormItem label="Gender" required error={errors.gender?.message}>
-                <GenderSelector
-                  onValueChange={(value) => field.onChange(value)}
-                  value={field.value}
+            <div className="grid grid-cols-2 gap-4">
+              <FormItem
+                label="First Name"
+                required
+                error={errors.firstName?.message}
+              >
+                <Input
+                  placeholder="Enter first name"
+                  {...register("firstName")}
                 />
               </FormItem>
-            )}
-          />
-        </BaseForm>
+              <FormItem
+                label="Last Name"
+                required
+                error={errors.lastName?.message}
+              >
+                <Input
+                  placeholder="Enter last name"
+                  {...register("lastName")}
+                />
+              </FormItem>
+            </div>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <FormItem
+                  label="Gender"
+                  required
+                  error={errors.gender?.message}
+                >
+                  <GenderSelector
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  />
+                </FormItem>
+              )}
+            />
+          </BaseForm>
+        </FormSkeleton>
       </CardContent>
       <CardFooter className="justify-end gap-4">
-        <Button variant="secondary">Reset</Button>
-        <Button>Save changes</Button>
+        <Button onClick={() => reset()} variant="secondary">
+          Reset
+        </Button>
+        <Button
+          onClick={() => onSubmit(getValues())}
+          disabled={isLoading}
+          loading={updateMeMutation.isLoading}
+        >
+          Save changes
+        </Button>
       </CardFooter>
     </Card>
   );
